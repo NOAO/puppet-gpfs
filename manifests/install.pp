@@ -48,6 +48,8 @@ class gpfs::install( $gpfs_version = "3.4.0" ) {
   # add /usr/lpp/mmfs/bin to the default PATH
   file { '/etc/profile.d/gpfs.sh':
     ensure  => present,
+    owner   => 'root',
+    group   => 'root',
     mode    => '0644',
     source  => "puppet:///modules/gpfs/gpfs.sh",
   }
