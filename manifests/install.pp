@@ -1,4 +1,4 @@
-class gpfs::install( $gpfs_version = "3.4.0" ) {
+class gpfs::install( $gpfs_version = '3.4.0' ) {
   # For at least GPFS 3.4 & 3.5, only the 3.x.0-0 package contains the file
   # /usr/lpp/mmfs/lib/liblum.so
   #
@@ -16,7 +16,8 @@ class gpfs::install( $gpfs_version = "3.4.0" ) {
   # Loaded plugins: priorities, security, upgrade-helper
   # 98 packages excluded due to repository priority protections
   # Setting up Install Process
-  # Package matching gpfs.base-3.5.0-0.x86_64 already installed. Checking for update.
+  # Package matching gpfs.base-3.5.0-0.x86_64 already installed. Checking for
+  # update.
   # Nothing to do
 
   Exec {
@@ -39,7 +40,7 @@ class gpfs::install( $gpfs_version = "3.4.0" ) {
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
     unless  => '/bin/rpm -q gpfs.base',
-    before  => Package["gpfs.base"],
+    before  => Package['gpfs.base'],
   }
 
   # install the correct gpfs gpl'd kernel glue for our running kernel.  Note
@@ -53,23 +54,23 @@ class gpfs::install( $gpfs_version = "3.4.0" ) {
   #  require => Package['gpfs.base'],
   #}
 
-  exec { "yum install -y -e0 gpfs.gplbin-${kernelrelease}-${gpfs_version}":
-    unless  => "/bin/rpm -q gpfs.gplbin-${::kernelrelease}-$gpfs_version",
+  exec { "yum install -y -e0 gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
+    unless  => "/bin/rpm -q gpfs.gplbin-${::kernelrelease}-${gpfs_version}",
     require => Exec["gpfs.base-${gpfs_version}-0"],
   }
- 
+
   # this will take two runs to converage as puppet doesn't allow the same
   # package to have states for two different versions during the same run
   #package{ "gpfs.base-$gpfs_version":
-  package{ "gpfs.base":
+  package{ 'gpfs.base':
     ensure => latest,
   }
 
-  package{ "gpfs.docs":
+  package{ 'gpfs.docs':
     ensure => latest,
   }
 
-  package{ "gpfs.msg.en_US":
+  package{ 'gpfs.msg.en_US':
     ensure => latest,
   }
 
@@ -79,6 +80,6 @@ class gpfs::install( $gpfs_version = "3.4.0" ) {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => "puppet:///modules/gpfs/gpfs.sh",
+    source  => 'puppet:///modules/gpfs/gpfs.sh',
   }
 }
