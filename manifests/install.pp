@@ -50,7 +50,7 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
   # puppet will report that install this package fails... even though it doesn't
   # https://projects.puppetlabs.com/issues/10445
   #package{"gpfs.gplbin-$kernelrelease":
-  #  ensure  => latest,
+  #  ensure  => present,
   #  require => Package['gpfs.base'],
   #}
 
@@ -63,15 +63,15 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
   # package to have states for two different versions during the same run
   #package{ "gpfs.base-$gpfs_version":
   package{ 'gpfs.base':
-    ensure => latest,
+    ensure => present,
   }
 
   package{ 'gpfs.docs':
-    ensure => latest,
+    ensure => present,
   }
 
   package{ 'gpfs.msg.en_US':
-    ensure => latest,
+    ensure => present,
   }
 
   # add /usr/lpp/mmfs/bin to the default PATH
