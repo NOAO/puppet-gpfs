@@ -35,12 +35,12 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
   # the gpfs 3.x.0-0 base RPM has to be installed first and then later upgraded
   # to the 3.x.0-y patch level
   exec { "yum install -y -e0 gpfs.base-${gpfs_version}-0":
-    alias   => "gpfs.base-${gpfs_version}-0",
+    alias  => "gpfs.base-${gpfs_version}-0",
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
-    unless  => '/bin/rpm -q gpfs.base',
-    before  => Package['gpfs.base'],
+    unless => '/bin/rpm -q gpfs.base',
+    before => Package['gpfs.base'],
   }
 
   # install the correct gpfs gpl'd kernel glue for our running kernel.  Note
@@ -76,10 +76,10 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
 
   # add /usr/lpp/mmfs/bin to the default PATH
   file { '/etc/profile.d/gpfs.sh':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source  => 'puppet:///modules/gpfs/gpfs.sh',
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => 'puppet:///modules/gpfs/gpfs.sh',
   }
 }
