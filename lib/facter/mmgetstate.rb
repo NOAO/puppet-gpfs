@@ -1,5 +1,5 @@
 Facter.add(:mmgetstate) do
   setcode do
-    Facter::Util::Resolution.which('mmgetstate')
+    Facter::Core::Execution.which('mmgetstate')
   end
 end
