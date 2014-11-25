@@ -9,7 +9,9 @@ Facter.add(:gpfs_state) do
       #       20      foo1             active
       m = output.match(/^\s* (\d+)\s+(\w+)\s+(\w+) \s*$/mx)
 
-      next if m.nil?
+      # mmgetstate returns an error message if the node is unconfigured or
+      # otherwise broken
+      next 'broken' if m.nil?
       next unless m.size == 4
       m[3]
     end

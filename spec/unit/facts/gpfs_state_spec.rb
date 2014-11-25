@@ -28,7 +28,7 @@ describe 'gpfs_state', :type => :fact do
           with('/usr/lpp/mmfs/bin/mmgetstate 2>&1').
           returns(File.read(fixtures('mmgetstate', 'unconfigured')))
 
-        Facter.fact(:gpfs_state).value.should be_nil
+        Facter.fact(:gpfs_state).value.should == 'broken'
       end
     end
 
