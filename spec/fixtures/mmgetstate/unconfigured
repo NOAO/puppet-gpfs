@@ -1,0 +1,2 @@
+mmgetstate: This node does not belong to a GPFS cluster.
+mmgetstate: Command failed.  Examine previous error messages to determine cause.
