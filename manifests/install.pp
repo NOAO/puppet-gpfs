@@ -37,7 +37,7 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   exec { "${yum_install} gpfs.base-${gpfs_version}-0":
     alias  => "gpfs.base-${gpfs_version}-0",
     path   => ['/bin', '/usr/bin'],
-    unless => "rpm -q gpfs.base-${gpfs_version}-0",
+    unless => "rpm -q gpfs.base-${gpfs_version}",
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
