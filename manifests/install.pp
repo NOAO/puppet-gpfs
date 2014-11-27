@@ -36,15 +36,15 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # instead of waiting for a package resource to update the package later
   exec { "${yum_install} gpfs.base-${gpfs_version}-0":
     path   => ['/bin', '/usr/bin'],
-    unless => 'rpm -q gpfs.base',
+    unless => "rpm -q gpfs.base-${gpfs_version}-0",
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
   } ->
   exec { "${yum_install} gpfs.base-${gpfs_version}":
-    alias       => "gpfs.base-${gpfs_version}",
-    path        => ['/bin', '/usr/bin'],
-    refreshonly => true
+    alias  => "gpfs.base-${gpfs_version}",
+    path   => ['/bin', '/usr/bin'],
+    onlyif => "rpm -q gpfs.base-${gpfs_version}-0",
   }
 
   # install the correct gpfs gpl'd kernel glue for our running kernel.  Note
