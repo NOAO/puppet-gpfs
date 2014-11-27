@@ -1,4 +1,4 @@
-class gpfs::install( $gpfs_version = '3.4.0' ) {
+class gpfs::install( $gpfs_version = '3.5.0' ) {
   # For at least GPFS 3.4 & 3.5, only the 3.x.0-0 package contains the file
   # /usr/lpp/mmfs/lib/liblum.so
   #
@@ -34,13 +34,18 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
 
   # the gpfs 3.x.0-0 base RPM has to be installed first and then later upgraded
   # to the 3.x.0-y patch level
-  exec { "yum install -y -e0 gpfs.base-${gpfs_version}-0":
-    alias  => "gpfs.base-${gpfs_version}-0",
+  # we're doing a double exec in hopes that we'll converge in a single run
+  # instead of waiting for a package resource to update the package later
+  exec { "yum install -y -e0 --disableexcludes=main gpfs.base-${gpfs_version}-0":
+    alias   => "gpfs.base-${gpfs_version}-0",
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
-    unless => '/bin/rpm -q gpfs.base',
-    before => Package['gpfs.base'],
+    unless  => '/bin/rpm -q gpfs.base',
+  } ->
+  exec { "yum install -y -e0 --disableexcludes=main gpfs.base-${gpfs_version}":
+    alias   => "gpfs.base-${gpfs_version}",
+    refreshonly => true
   }
 
   # install the correct gpfs gpl'd kernel glue for our running kernel.  Note
@@ -54,16 +59,9 @@ class gpfs::install( $gpfs_version = '3.4.0' ) {
   #  require => Package['gpfs.base'],
   #}
 
-  exec { "yum install -y -e0 gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
+  exec { "yum install -y -e0 --disableexcludes=main gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
     unless  => "/bin/rpm -q gpfs.gplbin-${::kernelrelease}-${gpfs_version}",
-    require => Exec["gpfs.base-${gpfs_version}-0"],
-  }
-
-  # this will take two runs to converage as puppet doesn't allow the same
-  # package to have states for two different versions during the same run
-  #package{ "gpfs.base-$gpfs_version":
-  package{ 'gpfs.base':
-    ensure => present,
+    require => Exec["gpfs.base-${gpfs_version}"],
   }
 
   package{ 'gpfs.docs':
