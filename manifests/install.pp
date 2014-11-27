@@ -20,9 +20,7 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # update.
   # Nothing to do
 
-  Exec {
-    path => '/usr/bin',
-  }
+  $yum_install = 'yum install -y -e0 --disableexcludes=main'
 
   # remove gpfs.base if it looks like the 3.x.0-0 package wasn't prevously
   # installed, ie, we have an ordering problem likely caused by rpm/yum update
@@ -36,15 +34,16 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # to the 3.x.0-y patch level
   # we're doing a double exec in hopes that we'll converge in a single run
   # instead of waiting for a package resource to update the package later
-  exec { "yum install -y -e0 --disableexcludes=main gpfs.base-${gpfs_version}-0":
-    alias   => "gpfs.base-${gpfs_version}-0",
+  exec { "${yum_install} gpfs.base-${gpfs_version}-0":
+    path   => ['/bin', '/usr/bin'],
+    unless => '/bin/rpm -q gpfs.base',
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
-    unless  => '/bin/rpm -q gpfs.base',
   } ->
-  exec { "yum install -y -e0 --disableexcludes=main gpfs.base-${gpfs_version}":
-    alias   => "gpfs.base-${gpfs_version}",
+  exec { "${yum_install} gpfs.base-${gpfs_version}":
+    alias       => "gpfs.base-${gpfs_version}",
+    path        => ['/bin', '/usr/bin'],
     refreshonly => true
   }
 
@@ -59,17 +58,25 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   #  require => Package['gpfs.base'],
   #}
 
-  exec { "yum install -y -e0 --disableexcludes=main gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
+  exec { "${yum_install} gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
+    path    => ['/bin', '/usr/bin'],
     unless  => "/bin/rpm -q gpfs.gplbin-${::kernelrelease}-${gpfs_version}",
     require => Exec["gpfs.base-${gpfs_version}"],
   }
 
-  package{ 'gpfs.docs':
-    ensure => present,
+  # gpfs.docs & gpfs.msg.en_US don't require any special handling but the yum
+  # provider doesn't work with --disableexcludes
+  #
+  # this proposed PR should be part of puppet 4.0.0
+  # https://github.com/puppetlabs/puppet/pull/3336
+  exec { "${yum_install} gpfs.docs":
+    path   => ['/bin', '/usr/bin'],
+    unless => '/bin/rpm -q gpfs.docs',
   }
 
-  package{ 'gpfs.msg.en_US':
-    ensure => present,
+  exec { "${yum_install} gpfs.msg.en_US":
+    path   => ['/bin', '/usr/bin'],
+    unless => '/bin/rpm -q gpfs.msg.en_US',
   }
 
   # add /usr/lpp/mmfs/bin to the default PATH
