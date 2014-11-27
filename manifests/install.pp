@@ -36,7 +36,7 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # instead of waiting for a package resource to update the package later
   exec { "${yum_install} gpfs.base-${gpfs_version}-0":
     path   => ['/bin', '/usr/bin'],
-    unless => '/bin/rpm -q gpfs.base',
+    unless => 'rpm -q gpfs.base',
     # we need to test for gpfs.base-<version> so we catch the case where we are
     # upgrading to a newer 3.Y.0 release
 #    creates => '/usr/lpp/mmfs/lib/liblum.so',
@@ -60,7 +60,7 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
 
   exec { "${yum_install} gpfs.gplbin-${::kernelrelease}-${gpfs_version}":
     path    => ['/bin', '/usr/bin'],
-    unless  => "/bin/rpm -q gpfs.gplbin-${::kernelrelease}-${gpfs_version}",
+    unless  => "rpm -q gpfs.gplbin-${::kernelrelease}-${gpfs_version}",
     require => Exec["gpfs.base-${gpfs_version}"],
   }
 
@@ -71,12 +71,12 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # https://github.com/puppetlabs/puppet/pull/3336
   exec { "${yum_install} gpfs.docs":
     path   => ['/bin', '/usr/bin'],
-    unless => '/bin/rpm -q gpfs.docs',
+    unless => 'rpm -q gpfs.docs',
   }
 
   exec { "${yum_install} gpfs.msg.en_US":
     path   => ['/bin', '/usr/bin'],
-    unless => '/bin/rpm -q gpfs.msg.en_US',
+    unless => 'rpm -q gpfs.msg.en_US',
   }
 
   # add /usr/lpp/mmfs/bin to the default PATH
