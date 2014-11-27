@@ -35,6 +35,7 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
   # we're doing a double exec in hopes that we'll converge in a single run
   # instead of waiting for a package resource to update the package later
   exec { "${yum_install} gpfs.base-${gpfs_version}-0":
+    alias  => "gpfs.base-${gpfs_version}-0",
     path   => ['/bin', '/usr/bin'],
     unless => "rpm -q gpfs.base-${gpfs_version}-0",
     # we need to test for gpfs.base-<version> so we catch the case where we are
@@ -81,10 +82,11 @@ class gpfs::install( $gpfs_version = '3.5.0' ) {
 
   # add /usr/lpp/mmfs/bin to the default PATH
   file { '/etc/profile.d/gpfs.sh':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => 'puppet:///modules/gpfs/gpfs.sh',
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///modules/gpfs/gpfs.sh',
+    require => Exec["gpfs.base-${gpfs_version}-0"],
   }
 }
